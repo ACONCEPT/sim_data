@@ -4,21 +4,12 @@ import random as rd
 from datetime import datetime, timedelta
 import os
 
-from config import number_of_users,\
-            base_view_rate,\
-            base_trigger_rate,\
-            base_conversion_rate,\
-            profile_proportions,\
-            ONE_MINUTE,\
-            ONE_HOUR,\
-            ONE_DAY,\
-            HALF_DAY,\
-            TRIGGERS,\
-            USER_ACTIONS,\
-            USERS,\
-            ALL_DAYS,\
-            STREAM_DATA_FILE,\
-            STREAM_COLS
+from config import ALL_DAYS,\
+                USERS,\
+                STREAM_DATA_FILE,\
+                STREAM_COLS,\
+                number_of_users,\
+                ONE_DAY
 
 from helpers import\
             initialize,\
@@ -28,9 +19,9 @@ from helpers import\
 from user_proc import UserProcess
 
 def day_process(env):
-    new_users = new_user_count()
+    global ALL_DAYS new_users = new_user_count()
     print("new day {} new users".format(new_users))
-
+    ALL_DAYS += 1
     for uid, x in enumerate(range(new_users)):
         uid = len(USERS) + uid
 #        new_user_proc(env, uid)

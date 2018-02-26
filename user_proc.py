@@ -4,21 +4,15 @@ from simpy.events import AnyOf
 import random as rd
 from datetime import datetime, timedelta
 import os
-from config import number_of_users,\
-            base_view_rate,\
-            base_trigger_rate,\
-            base_conversion_rate,\
+from config import\
             profile_proportions,\
-            ONE_MINUTE,\
-            ONE_HOUR,\
-            ONE_DAY,\
-            HALF_DAY,\
             TRIGGERS,\
             USER_ACTIONS,\
             USERS,\
-            ALL_DAYS,\
             STREAM_DATA_FILE,\
-            STREAM_COLS
+            STREAM_COLS,\
+            FENCES,\
+            NOTIFICATIONS
 
 from helpers import\
         trigger_opportunity,\
@@ -85,10 +79,10 @@ class UserProcess(object):
         self.write()
 
     def set_fence(self):
-        self.fence_name = "anyfence"
+        self.fence_name = rd.choice(list(FENCES.keys()))
 
     def set_notification(self):
-        self.notification_name = "testnotification"
+        self.notification_name = rd.choice(NOTIFICATIONS)
 
     def set_timestamp(self,wipe = False):
         if not wipe:
@@ -113,7 +107,6 @@ class UserProcess(object):
             self.set_timestamp(wipe = True)
             if self.env.now == 0:
                 self.env.timeout(1)
-
             trigger = trigger_opportunity()
             if trigger:
                 print("trigger success timestamp {}, userid {} profile {}".format(self.env.now,self.id, self.profile))
@@ -131,68 +124,3 @@ class UserProcess(object):
                         print("convert success timestamp {}, userid {} profile {}".format(self.env.now,self.id, self.profile))
             else:
                 yield self.env.timeout(trigger_fail_timeout())
-#            self.env.process(self.stream_process())
-
-
-
-
-
-
-#    def trigger_(self):
-#        self.env.process(self.view_())
-#        yield self.trigger_event
-#        # create trigger tuple
-#        self.trigger = len(TRIGGERS) + 1
-#        # append trigger tuple to this objects list of actions
-#        yield self.env.timeout(trigger_success_timeout())
-#
-#        # append trigger tuple to global list of triggers 
-#        TRIGGERS.append((self.trigger,self.env.now))
-#
-#        print("streaming trigger out timestamp {}, userid {} profile {}".format(self.env.now,self.id, self.profile))
-##        stream_data_out(type = "trigger",\
-##                        timestamp = self.env.now,\
-##                        fence_name = "default",\
-##                        notification_name = "default",\
-##                        userid = self.id)
-#        self.type = "trigger"
-#        self.timestamp = self.env.now
-#        self.fence_name = "default"
-#        self.notification_name = "default"
-#        self.userid = self.id
-#        view = view_opportunity()
-#        if view:
-#            self.view_event.succeed()
-#            self.view_event = self.env.event()
-
-#    def view_(self):
-#        self.env.process(self.convert_())
-#        while True:
-#            yield self.view_event
-#            self.view = (self.trigger,"view",self.env.now)
-#            USER_ACTIONS.append(self.view)
-#
-##            stream_data_out(type = "view",\
-##                            timestamp = self.env.now,\
-##                            fence_name = "default",\
-#                            notification_name = "default",\
-#                            userid = self.id)
-#
-#            convert = conversion_opportunity()
-#            if convert:
-#                self.convert_event.succeed()
-#                self.convert_event = self.env.event()
-#            yield self.env.timeout(view_success_timeout())
-
-#    def convert_(self):
-#        while True:
-#            yield self.convert_event
-#            self.convert = (self.trigger,"conversion",self.env.now)
-#            USER_ACTIONS.append(self.convert)
-##            stream_data_out(type = "conversion",\
-##                            timestamp = self.env.now,\
-##                            fence_name = "default",\
-##                            notification_name = "default",\
-##                            userid = self.id)
-#            yield self.env.timeout(convert_success_timeout())
-

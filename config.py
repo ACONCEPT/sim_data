@@ -11,6 +11,8 @@ USERS = []
 ALL_DAYS = 0
 STREAM_DATA_FILE = "{}/repos/sims/useractions.csv".format(os.environ['HOME'])
 STREAM_COLS = ["type","timestamp","fence_name","notification_name","userid","triggerid"]
+FENCES={"Macy's":(41.8836188,-87.6276187,50),"Quincy":(41.8801376,-87.636684,50),"Roosevelt":(41.8680657,-87.6289568,50),"Evanston":(42.0617337,-87.6948626,50),"35th":(41.8304217,-87.6293915,50)}
+NOTIFICATIONS=["RED","BEAUTY","STYLE","PARTY","SPRING"]
 
 number_of_users = int()
 base_trigger_rate = float()

@@ -26,18 +26,6 @@ def initialize(filename, headers):
 def status_report():
     print("day:{}\nusers:{}\nactions:{}".format(str(ALL_DAYS),len(USERS),len(USER_ACTIONS)))
 
-#def stream_data_out(**kwargs):
-#    filename = STREAM_DATA_FILE
-#    data = {}
-#    for col in STREAM_COLS:
-#        data[col] = kwargs.get(col,None)
-#    dvals = [str(x) for x in data.values()]
-#    out = "{}\n".format(",".join(dvals))
-#    print("writing row {} " .format(out))
-#    with open(filename,"a") as of:
-#        of.write(out)
-
-
 def _opportunity(q):
     p = rd.uniform(0,1)
     result = p < q
