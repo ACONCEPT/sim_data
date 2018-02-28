@@ -3,52 +3,62 @@ import simpy
 import random as rd
 from datetime import datetime, timedelta
 import os
-
 from config import ALL_DAYS,\
                 USERS,\
                 STREAM_DATA_FILE,\
                 STREAM_COLS,\
                 number_of_users,\
-                ONE_DAY
-
+                ONE_DAY,\
+                RUN_TIME,\
+                RUNS
 from helpers import\
             initialize,\
-            status_report,\
             new_user_count
+from user_proc import UserProcess, USER_ACTIONS, TRIGGERS
 
-from user_proc import UserProcess
+def status_report():
+    print("day:{}\nusers:{}\nactions:{}".format(str(ALL_DAYS),len(USERS),len(USER_ACTIONS)))
 
-def day_process(env):
-    global ALL_DAYS new_users = new_user_count()
-    print("new day {} new users".format(new_users))
-    ALL_DAYS += 1
-    for uid, x in enumerate(range(new_users)):
-        uid = len(USERS) + uid
-#        new_user_proc(env, uid)
-
-    for i in range(24):
-        yield env.process(hour_process(env))
-#        print("new hour")
-
-def hour_process(env):
-    for i in range(60):
-        yield env.process(minute_process(env))
-
-def minute_process(env):
-    for i in range(60):
-        yield env.process(second_process(env))
+class RegularProcess(object):
+    def __init__(self,env) :
+        self.env = env
+#        self.active = self.env.process(self.day_process())
 
 
-def second_process(env):
-    yield env.timeout(1)
+    def day_process(self):
+        new_users = new_user_count()
+        print("new day {} new users".format(new_users))
+        self.newusers = []
+        for uid, x in enumerate(range(new_users)):
+            uid = len(USERS) + uid
+            new_user = UserProcess(env,uid)
+            USERS.append(new_user)
+            self.newusers.append(new_user)
+ 
+        for i in range(24):
+            yield self.env.process(self.hour_process())
 
+    def hour_process(self):
+        for i in range(60):
+            yield self.env.process(self.minute_process())
 
-def new_user_proc(env,uid):
-        new_user = UserProcess(env,uid)
-        USERS.append(new_user)
-        if len(USERS) % 100000 == 0:
-            print("{} users created".format(len(USERS)))
-        return env.process(new_user.user_process())
+    def minute_process(self):
+        for i in range(60):
+            yield self.env.process(self.second_process())
+
+    def second_process(self):
+        p = rd.randint(0,100)
+        if p <= 20:
+            n = rd.randint(0,200)
+            if n <= len(self.newusers):
+                for x in range(n):
+                    user = self.newusers.pop()
+                    self.env.process(user.user_process())
+            else:
+                for x in range(len(self.newusers)):
+                    user = self.newusers.pop()
+                    self.env.process(user.user_process())
+        yield env.timeout(1)
 
 
 def simulation_run(env,**kwargs):
@@ -62,6 +72,7 @@ def simulation_run(env,**kwargs):
     initialize(STREAM_DATA_FILE,STREAM_COLS)
 
     usercount = kwargs.get("starting_users",False)
+
     print("about to create {} users".format(usercount))
 
     for uid, x in enumerate(range(usercount)):
@@ -74,13 +85,14 @@ def simulation_run(env,**kwargs):
     status_report()
     while True:
         ALL_DAYS += 1
-        yield env.process(day_process(env))
+        yield env.process(RegularProcess(env).day_process())
         status_report()
 
 if __name__ == '__main__':
-    env = simpy.Environment()
-    print("Environment Generated, number of users is {}".format(number_of_users))
-    env.process(simulation_run(env,starting_users = number_of_users))
-    print("process started")
-    env.run(until = (ONE_DAY * 5))
-    print("environment ran")
+    for i in range(RUNS):
+        env = simpy.Environment()
+        print("Environment Generated, number of users is {}".format(number_of_users))
+        env.process(simulation_run(env,starting_users = number_of_users))
+        print("process started")
+        env.run(until = RUN_TIME)
+        print("environment ran")

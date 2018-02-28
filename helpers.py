@@ -23,8 +23,6 @@ def initialize(filename, headers):
     with open(filename,"w+") as of:
         of.write(out)
 
-def status_report():
-    print("day:{}\nusers:{}\nactions:{}".format(str(ALL_DAYS),len(USERS),len(USER_ACTIONS)))
 
 def _opportunity(q):
     p = rd.uniform(0,1)
@@ -72,15 +70,15 @@ def ua_type():
     return "trigger"
 
 def new_user_count():
-    return rd.randint(0,100)
+    return rd.randint(0,10)
 
 def trigger_fail_timeout():
     return rd.randint(0 , ONE_HOUR*2 + ONE_MINUTE*30)
 
 def trigger_success_timeout():
     p = rd.randint(0,50)
-#    if p >= 45:
-#        p = rd.randint(ONE_HOUR,ONE_HOUR*3)
+    if p >= 45:
+        p = rd.randint(ONE_HOUR,ONE_HOUR*3)
     return p
 
 def view_success_timeout():

@@ -32,7 +32,7 @@ class UserProcess(object):
         self.env = env
         self.profile = assign_profile_proportions(profile_proportions,1)[0]
         self.id = userid
-        self.action = env.process(self.user_process())
+#        self.action = env.process(self.user_process())
         self.my_triggers = []
         self.trigger_event = self.env.event()
         self.convert_event = self.env.event()
@@ -47,7 +47,7 @@ class UserProcess(object):
         for col in STREAM_COLS:
             data.append(str(getattr(self,col)))
         out = "{}\n".format(",".join(data))
-        print("writing row {} " .format(out))
+#        print("writing row {} " .format(out))
         with open(STREAM_DATA_FILE,"a") as of:
             of.write(out)
 
@@ -100,8 +100,8 @@ class UserProcess(object):
         self.set_userid()
     def life(self):
 #        self.env.process(self.stream_process())
-        print("".join(["=" for x in range(100)]))
-        print("".join(["=" for x in range(100)]))
+#        print("".join(["=" for x in range(100)]))
+#        print("".join(["=" for x in range(100)]))
         while True:
             self.type = None
             self.set_timestamp(wipe = True)
@@ -109,18 +109,18 @@ class UserProcess(object):
                 self.env.timeout(1)
             trigger = trigger_opportunity()
             if trigger:
-                print("trigger success timestamp {}, userid {} profile {}".format(self.env.now,self.id, self.profile))
+#                print("trigger success timestamp {}, userid {} profile {}".format(self.env.now,self.id, self.profile))
                 self.trigger_success()
                 yield self.env.timeout(trigger_success_timeout())
                 view = view_opportunity()
                 if view:
-                    print("view success timestamp {}, userid {} profile {}".format(self.env.now,self.id, self.profile))
+#                    print("view success timestamp {}, userid {} profile {}".format(self.env.now,self.id, self.profile))
                     self.view_success()
                     yield self.env.timeout(view_success_timeout())
                     convert = conversion_opportunity()
                     if convert:
                         self.convert_success()
                         yield self.env.timeout(convert_success_timeout())
-                        print("convert success timestamp {}, userid {} profile {}".format(self.env.now,self.id, self.profile))
+#                        print("convert success timestamp {}, userid {} profile {}".format(self.env.now,self.id, self.profile))
             else:
                 yield self.env.timeout(trigger_fail_timeout())
