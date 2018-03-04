@@ -98,10 +98,8 @@ class UserProcess(object):
         self.set_notification()
         self.set_timestamp()
         self.set_userid()
+
     def life(self):
-#        self.env.process(self.stream_process())
-#        print("".join(["=" for x in range(100)]))
-#        print("".join(["=" for x in range(100)]))
         while True:
             self.type = None
             self.set_timestamp(wipe = True)

@@ -11,9 +11,11 @@ from config import ALL_DAYS,\
                 ONE_DAY,\
                 RUN_TIME,\
                 RUNS
+
 from helpers import\
             initialize,\
             new_user_count
+
 from user_proc import UserProcess, USER_ACTIONS, TRIGGERS
 
 def status_report():
@@ -61,19 +63,22 @@ class RegularProcess(object):
         yield env.timeout(1)
 
 
-def simulation_run(env,**kwargs):
+def simulation_run(env,**kwargs,reinit = True):
     global timedata
     global ALL_DAYS
+    global USERS
+    global USER_ACTIONS
+    USERS = []
+    USER_ACITONS = []
     user_actions = []
     users = []
 
-    with open(STREAM_DATA_FILE,"w+") as of:
-        of.write("")
-    initialize(STREAM_DATA_FILE,STREAM_COLS)
-
-    usercount = kwargs.get("starting_users",False)
-
-    print("about to create {} users".format(usercount))
+    if reinit:
+        with open(STREAM_DATA_FILE,"w+") as of:
+            of.write("")
+        initialize(STREAM_DATA_FILE,STREAM_COLS)
+    
+        usercount = kwargs.get("starting_users",False)
 
     for uid, x in enumerate(range(usercount)):
         new_user = UserProcess(env,uid)

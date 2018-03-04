@@ -18,7 +18,7 @@ RUN_TIME = ONE_DAY * 365
 RUNS = 50
 
 number_of_users = 100
-base_trigger_rate = 1/1800
+base_trigger_rate = 1
 base_conversion_rate = 6/10
 base_view_rate = 3/4
 profile_proportions =[("sally",.25),\
